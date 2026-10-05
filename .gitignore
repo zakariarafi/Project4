@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Sistem dan editor
+.DS_Store
+.idea/
+.vscode/
+
+# Artefak sementara benchmark
+data/raw/*.jsonl
+data/raw/*.log
+data/tmp/
+plots/*.png
+plots/*.pdf
+
+# Rahasia dan konfigurasi lokal
+.env
+.env.*
+!.env.example
+hf_token.txt

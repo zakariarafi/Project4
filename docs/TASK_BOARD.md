@@ -9,7 +9,7 @@ Pemilik awal adalah usulan; tim dapat menukarnya saat stand-up.
 | T02 | Validasi model ID dan kapasitas disk/RAM | A | T01 | TODO | Semua ID model di config nyata atau diberi status unavailable. |
 | T03 | Reverse engineer `generate.py` | B | akses clone MLX | TODO | Empat pertanyaan di `docs/NOTES.md` terjawab untuk versi source yang tepat. |
 | T04 | Uji output dan hak akses `powermetrics` | A | T01 | IN PROGRESS | Contoh output dan parser test tersedia. Parser + test dengan fixture sintetis sudah ada; tinggal output asli dari Mac target. |
-| T05 | Tetapkan prompt canonical dan provenance | B | — | TODO | `prompts/gsm8k_10.jsonl` dan README prompt selesai. |
+| T05 | Tetapkan prompt canonical dan provenance | B | — | REVIEW | `prompts/gsm8k_10.jsonl` dan README prompt selesai. Dibuat di `anggota-a/dev`; B memeriksa metode pemilihan. |
 | T06 | Definisikan config eksperimen A/B | B | T02, T03 | TODO | File YAML menyebut semua parameter dan model ID. |
 | T07 | Implementasi bench runner | A | T03, T04, T05 | IN PROGRESS | Smoke run membuat JSONL valid. `src/bench.py` sudah ada; belum diuji pada Mac (menunggu T03/T05). |
 | T08 | Validasi skema + perhitungan energi | B | T07 | TODO | Unit test dan review silang lulus. |

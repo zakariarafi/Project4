@@ -16,6 +16,9 @@ data/raw/*.log
 data/tmp/
 plots/*.png
 plots/*.pdf
+# Dua grafik wajib (PRD §10) harus ikut di-commit
+!plots/throughput_by_model_size.png
+!plots/energy_per_token.png
 
 # Rahasia dan konfigurasi lokal
 .env

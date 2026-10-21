@@ -22,8 +22,8 @@ parameter eksperimen, atau perhitungan energi harus direview anggota lain.
 
 1. `main` hanya menerima perubahan yang dapat dijalankan atau dokumentasi yang
    konsisten. Hindari commit setengah jadi yang merusak flow utama.
-2. Gunakan branch pendek: `codex/setup`, `codex/bench`, `codex/power-parser`,
-   `codex/analysis`, dan sejenisnya.
+2. Gunakan branch pendek dengan prefix pemilik: `anggota-a/dev`,
+   `anggota-a/power-parser`, `anggota-b/analysis`, dan sejenisnya.
 3. Satu branch sebaiknya berfokus pada satu area. Jangan sekaligus mengubah
    parser daya, model matrix, dan grafik tanpa alasan.
 4. Commit message menjelaskan dampak, misalnya `feat: record per-run power
@@ -46,7 +46,7 @@ Sebelum menyerahkan pekerjaan ke rekan, sertakan:
 Contoh handoff ringkas:
 
 ```text
-Branch: codex/power-parser
+Branch: anggota-a/power-parser
 Validated: pytest tests/test_power_parser.py
 Output: parser mengubah "Combined Power ... 1234 mW" menjadi 1.234 W
 Open: format output powermetrics pada macOS target belum dipastikan

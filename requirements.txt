@@ -1,0 +1,10 @@
+# Versi yang tervalidasi berjalan (docs/DECISIONS.md D-001). Pin ulang setelah
+# T01 mencatat versi persis pada manifest lingkungan.
+mlx==0.32.3
+# mlx-lm terpasang sebagai 0.32.1.dev6 dari source; dev build tidak ada di PyPI.
+# Pasang dari clone yang sama dan catat commit-nya di data/manifests/:
+#   pip install -e /path/ke/mlx-lm
+mlx-lm>=0.32
+
+# Pengembangan dan test
+pytest>=8

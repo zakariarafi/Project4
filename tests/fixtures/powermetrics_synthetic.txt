@@ -1,0 +1,47 @@
+Machine model: Mac15,6
+OS version: 24A335
+Boot arguments:
+Boot time: Mon Oct 19 09:00:00 2026
+
+*** Sampled system activity (Wed Oct 21 10:00:00 2026 +0700) (100.42ms elapsed) ***
+
+**** Processor usage ****
+
+E-Cluster HW active frequency: 1020 MHz
+P-Cluster HW active frequency: 3504 MHz
+
+CPU Power: 1200 mW
+GPU Power: 300 mW
+ANE Power: 0 mW
+Combined Power (CPU + GPU + ANE): 1500 mW
+
+**** GPU usage ****
+
+GPU HW active frequency: 1398 MHz
+GPU idle residency:  12.34%
+GPU Power: 300 mW
+
+*** Sampled system activity (Wed Oct 21 10:00:00 2026 +0700) (99.58ms elapsed) ***
+
+**** Processor usage ****
+
+CPU Power: 4000 mW
+GPU Power: 8000 mW
+ANE Power: 0 mW
+Combined Power (CPU + GPU + ANE): 12000 mW
+
+**** GPU usage ****
+
+GPU Power: 8000 mW
+
+*** Sampled system activity (Wed Oct 21 10:00:00 2026 +0700) (100.00ms elapsed) ***
+
+**** Processor usage ****
+
+CPU Power: 2500 mW
+GPU Power: 500 mW
+ANE Power: 100 mW
+
+**** GPU usage ****
+
+GPU Power: 999 mW

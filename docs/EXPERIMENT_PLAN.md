@@ -87,8 +87,12 @@ angka baseline dari Eksperimen A tidak dipakai sebagai pembanding B.
 
 ## Agregasi dan pelaporan
 
-Agregator menghitung paling sedikit rata-rata, median, standar deviasi, jumlah
-run valid, dan jumlah gagal per konfigurasi. Tabel final harus membedakan
+Agregator (`python -m src.aggregate ... --expect config/*.yaml`) menghitung
+rata-rata, median, standar deviasi, jumlah run valid, gagal, tidak lengkap,
+dilewati, dan `energy_clipped` per konfigurasi, serta kelengkapan terhadap
+config. Untuk run speculative ia juga menghitung speedup dan rasio J/token
+terhadap baseline target yang sama, dan jumlah `output_sha256` yang berbeda
+dari baseline. Tabel final harus membedakan
 baseline dan speculative decoding. Grafik menggunakan nilai agregat, bukan satu
 run terbaik.
 

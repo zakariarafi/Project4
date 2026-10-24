@@ -16,7 +16,7 @@ Pemilik awal adalah usulan; tim dapat menukarnya saat stand-up.
 | T09 | Jalankan Eksperimen A | A | T06–T08 | TODO | Record lengkap atau exception terdokumentasi. |
 | T10 | Audit data Eksperimen A | B | T09 | TODO | Ringkasan valid/fail dan outlier dicatat. |
 | T11 | Jalankan Eksperimen B | A | T06–T10 | TODO | Baseline dan enam variasi speculative tercatat. |
-| T12 | Agregasi dan grafik | B | T09, T11 | TODO | CSV summary dan dua grafik terbuat ulang dari source. |
+| T12 | Agregasi dan grafik | B | T09, T11 | IN PROGRESS | CSV summary dan dua grafik terbuat ulang dari source. `src/aggregate.py` dan `src/plot.py` sudah ada (dites dengan data sintetis); menunggu data T09/T11. |
 | T13 | README/reproducibility audit | A+B | T12 | TODO | Rekan dapat mengikuti instruksi smoke run dan angka konsisten. |
 
 ## Urutan kritis

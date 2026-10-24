@@ -353,13 +353,16 @@ tertulis di `docs/DECISIONS.md`.
 │   └── manifests/                    # metadata environment dan command run
 ├── plots/
 │   ├── throughput_by_model_size.png
-│   └── energy_per_token.png
+│   ├── energy_per_token.png
+│   └── speculative_by_k.png         # Eksperimen B (tambahan)
 ├── tests/
 │   ├── test_power_parser.py
 │   ├── test_energy.py
 │   ├── test_power_monitor.py
 │   ├── test_bench_helpers.py
 │   ├── test_experiments.py
+│   ├── test_aggregate.py
+│   ├── test_plot.py
 │   ├── test_prompts.py
 │   ├── test_result_schema.py
 │   └── fixtures/                    # contoh output powermetrics

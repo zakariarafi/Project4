@@ -38,6 +38,23 @@ python -m src.experiments config/experiment_a.yaml
 python -m src.experiments config/experiment_b.yaml --only qwen3-4b-4bit-k4
 ```
 
+Setelah data terkumpul, buat tabel ringkasan dan grafik final:
+
+```bash
+python -m src.aggregate data/raw/results.jsonl \
+    --expect config/experiment_a.yaml config/experiment_b.yaml
+python -m src.plot
+```
+
+`src.aggregate` menolak input yang melanggar skema, berisi run duplikat, atau
+mencampur parameter decoding dalam satu experiment ID. Hasilnya
+`data/processed/summary.csv` (rata-rata, median, simpangan baku, jumlah run per
+status, kelengkapan terhadap config, speedup dan rasio energi terhadap
+baseline, serta jumlah output speculative yang berbeda dari baseline) dan
+`data/processed/results_final.jsonl`. `src.plot` menulis
+`plots/throughput_by_model_size.png`, `plots/energy_per_token.png`, dan
+`plots/speculative_by_k.png` dari `summary.csv`.
+
 Jalankan semua perintah dari root repo. Model dan commit-nya di-pin di
 `config/defaults.yaml`; parameter decoding bersama juga ada di sana. Konfigurasi
 yang tidak muat di RAM tidak boleh diganti diam-diam: tambahkan

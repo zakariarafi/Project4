@@ -329,6 +329,8 @@ tertulis di `docs/DECISIONS.md`.
 ├── README.md
 ├── .gitignore
 ├── requirements.txt                 # pin dependency proyek setelah tervalidasi
+├── requirements-dev.txt             # dependensi test (tanpa MLX), dipakai CI
+├── .github/workflows/tests.yml      # pytest di setiap PR dan push ke main
 ├── src/
 │   ├── bench.py                     # CLI pengumpul metrik per run
 │   ├── power.py                     # pembaca/parsing powermetrics

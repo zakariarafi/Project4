@@ -1,0 +1,2 @@
+# Dependensi test; tidak butuh MLX sehingga bisa dipasang di Linux/CI.
+pytest>=8

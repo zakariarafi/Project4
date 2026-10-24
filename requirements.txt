@@ -6,5 +6,4 @@ mlx==0.32.3
 #   pip install -e /path/ke/mlx-lm
 mlx-lm>=0.32
 
-# Pengembangan dan test
-pytest>=8
+-r requirements-dev.txt

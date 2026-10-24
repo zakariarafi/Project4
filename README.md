@@ -20,7 +20,8 @@ orang, definisi eksperimen, dan aturan kolaborasi diringkas di:
 python3.12 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# test (tidak butuh Mac/MLX)
+# test (tidak butuh Mac/MLX; juga dijalankan GitHub Actions di setiap PR)
+pip install -r requirements-dev.txt   # cukup ini bila hanya menjalankan test
 python -m pytest
 
 # smoke run: satu model, satu prompt, satu run

@@ -1,0 +1,58 @@
+# Parameter bersama semua eksperimen (docs/PRD.md §7). Nilai di sini dipakai
+# kecuali file eksperimen atau entri konfigurasi menimpanya. Mengubah nilai
+# setelah data pertama terkumpul berarti experiment ID baru.
+params:
+  prompts: prompts/gsm8k_10.jsonl
+  runs: 3
+  max_tokens: 256
+  temperature: 0.0
+  seed: 0
+  enable_thinking: false     # Qwen3 non-thinking
+  warmup_tokens: 32
+  output: data/raw/results.jsonl
+  manifest_dir: data/manifests
+  power_interval_ms: 100     # D-002
+  idle_seconds: 20
+  reidle_every: 10           # D-003
+  reidle_seconds: 10
+
+# Registry model: alias -> repo Hugging Face + commit yang di-pin.
+# Divalidasi lewat Hugging Face API pada 2026-10-24 (T02): semua repo ada dan
+# tidak gated. size_gb = total file .safetensors (perkiraan unduhan, ±23 GB).
+models:
+  qwen3-0.6b-bf16:
+    repo: mlx-community/Qwen3-0.6B-bf16
+    revision: 42096995f6402fde107068cf530136fe64b604f8
+    size_gb: 1.19
+  qwen3-0.6b-8bit:
+    repo: mlx-community/Qwen3-0.6B-8bit
+    revision: 11de96878523501bcaa86104e3c186de07ff9068
+    size_gb: 0.63
+  qwen3-0.6b-4bit:
+    repo: mlx-community/Qwen3-0.6B-4bit
+    revision: 73e3e38d981303bc594367cd910ea6eb48349da8
+    size_gb: 0.34
+  qwen3-1.7b-bf16:
+    repo: mlx-community/Qwen3-1.7B-bf16
+    revision: 9cd6692855d3e06772228e9a962b2606359b2d24
+    size_gb: 3.44
+  qwen3-1.7b-8bit:
+    repo: mlx-community/Qwen3-1.7B-8bit
+    revision: 8c24f6782a91421513803ce527a27dcc560ab904
+    size_gb: 1.83
+  qwen3-1.7b-4bit:
+    repo: mlx-community/Qwen3-1.7B-4bit
+    revision: 3b1b1768f8f8cf8351c712464f906e86c2b8269e
+    size_gb: 0.97
+  qwen3-4b-bf16:
+    repo: mlx-community/Qwen3-4B-bf16
+    revision: 3639b5214e458512debf270c4fc8840ff6adfac6
+    size_gb: 8.04
+  qwen3-4b-8bit:
+    repo: mlx-community/Qwen3-4B-8bit
+    revision: 0348ad770d2ae658ca47b0579b2d2c37b20bbcac
+    size_gb: 4.27
+  qwen3-4b-4bit:
+    repo: mlx-community/Qwen3-4B-4bit
+    revision: 4dcb3d101c2a062e5c1d4bb173588c54ea6c4d25
+    size_gb: 2.26

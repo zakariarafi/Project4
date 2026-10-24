@@ -10,6 +10,7 @@ reproduksi benchmark. Jangan gunakan dokumen ini untuk log aktivitas rutin.
 | 2026-10-21 | D-003 | *Proposed:* `duration_s` = jendela end-to-end `stream_generate` termasuk prefill; idle diukur ulang tiap 10 run; nilai negatif dipotong dan ditandai `energy_clipped`. | Definisi sebelumnya ambigu; idle sekali per blok tidak menangkap drift thermal. | Skema bertambah field `energy_clipped`, `power_*`, `output_sha256`, parameter decoding. | A, review B |
 | 2026-10-21 | D-004 | *Proposed:* bila Qwen3-4B bf16 `skipped_resource_limit`, target bf16 Eksperimen B diganti 4B 8-bit dengan experiment ID baru. | Eksperimen B mewajibkan 4B bf16, sedangkan Eksperimen A hanya "jika feasible". | Eksperimen B tetap punya dua target precision. | Tim |
 | 2026-10-21 | D-005 | *Open:* tenggat awal 5–9 Oktober 2026 sudah lewat tanpa implementasi; jadwal baru perlu dikonfirmasi pengajar. | Tanggal hari ini 21 Oktober 2026. | Menentukan apakah fitur P1 tetap dikerjakan. | Tim/pengajar |
+| 2026-10-24 | D-006 | *Proposed:* Eksperimen B menjalankan baseline tanpa draft sendiri (`B-speculative`), dan semua model di-pin ke commit Hugging Face di `config/defaults.yaml`. | Baseline dari sesi lain (Eksperimen A) bisa berbeda kondisi thermal/latar; repo model dapat diperbarui setelah validasi. | +60 record di B; `load()` memakai `revision` sehingga bobot model sama di setiap run. | A, review B |
 
 ## Template keputusan
 

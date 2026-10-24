@@ -9,8 +9,9 @@ ruang lingkup ada di [PRD.md](PRD.md).
    sistem dan jangan menaruh implementasi proyek di clone `mlx-lm`.
 2. Catat `python --version`, `pip show mlx mlx-lm`, chip, RAM, versi macOS,
    sisa disk, dan git revision/versi source `mlx-lm` pada manifest lingkungan.
-3. Tentukan model ID MLX Community yang benar. Semua command benchmark wajib
-   memakai identifier model eksplisit.
+3. Model ID MLX Community dan commit-nya sudah di-pin di
+   `config/defaults.yaml`. Semua command benchmark memakai identifier model
+   eksplisit; jalankan matriks lewat `python -m src.experiments`.
 4. Jalankan `mlx_lm.generate --help` dan periksa flag draft. Baca source
    `mlx_lm/generate.py`; tulis temuannya di `docs/NOTES.md`.
 5. Jalankan `sudo powermetrics --samplers cpu_power,gpu_power -i 100 -n 5`.
@@ -67,7 +68,9 @@ Cadangan: jika Qwen3-4B bf16 tidak dapat dimuat, baris pertama diganti
 Qwen3-4B 8-bit dengan experiment ID baru (D-004).
 
 Target nominal speculative: `6 konfigurasi × 10 prompt × 3 run = 180` record
-terukur, ditambah dua baseline (60 record) bila belum tersedia dari Eksperimen A.
+terukur, ditambah dua baseline (60 record). Baseline dijalankan ulang di
+experiment ID B agar kondisi sesinya sama dengan run speculative (D-006);
+angka baseline dari Eksperimen A tidak dipakai sebagai pembanding B.
 
 ## Kriteria kualitas sebelum agregasi
 

@@ -1,0 +1,40 @@
+# Eksperimen B — standard speculative decoding (docs/EXPERIMENT_PLAN.md).
+# 2 target × 3 nilai k = 6 konfigurasi speculative (180 record) ditambah
+# baseline tanpa draft untuk tiap target (60 record). Baseline dijalankan di
+# experiment ID ini juga agar kondisi sesi sama dengan run speculative (D-006).
+#
+# Cadangan D-004: jika qwen3-4b-bf16 berstatus skipped_resource_limit di
+# Eksperimen A, salin file ini ke experiment ID baru (mis. B-speculative-8bit)
+# dan ganti target bf16 dengan qwen3-4b-8bit. Jangan ubah file ini diam-diam.
+experiment_id: B-speculative
+
+configs:
+  - config_id: qwen3-4b-bf16-baseline
+    model: qwen3-4b-bf16
+  - config_id: qwen3-4b-bf16-k2
+    model: qwen3-4b-bf16
+    draft_model: qwen3-0.6b-4bit
+    num_draft_tokens: 2
+  - config_id: qwen3-4b-bf16-k4
+    model: qwen3-4b-bf16
+    draft_model: qwen3-0.6b-4bit
+    num_draft_tokens: 4
+  - config_id: qwen3-4b-bf16-k8
+    model: qwen3-4b-bf16
+    draft_model: qwen3-0.6b-4bit
+    num_draft_tokens: 8
+
+  - config_id: qwen3-4b-4bit-baseline
+    model: qwen3-4b-4bit
+  - config_id: qwen3-4b-4bit-k2
+    model: qwen3-4b-4bit
+    draft_model: qwen3-0.6b-4bit
+    num_draft_tokens: 2
+  - config_id: qwen3-4b-4bit-k4
+    model: qwen3-4b-4bit
+    draft_model: qwen3-0.6b-4bit
+    num_draft_tokens: 4
+  - config_id: qwen3-4b-4bit-k8
+    model: qwen3-4b-4bit
+    draft_model: qwen3-0.6b-4bit
+    num_draft_tokens: 8

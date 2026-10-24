@@ -32,20 +32,20 @@ python -m src.bench \
     --limit-prompts 1 --runs 1 --output data/raw/smoke.jsonl
 python -m src.schemas data/raw/smoke.jsonl
 
-# speculative decoding (Eksperimen B)
-python -m src.bench \
-    --experiment-id B-speculative --config-id qwen3-4b-4bit-k4 \
-    --model mlx-community/Qwen3-4B-4bit \
-    --draft-model mlx-community/Qwen3-0.6B-4bit --num-draft-tokens 4
-
-# konfigurasi yang tidak muat di RAM: catat alasannya, jangan diganti diam-diam
-python -m src.bench --experiment-id A-size-precision --config-id qwen3-4b-bf16 \
-    --model mlx-community/Qwen3-4B-bf16 --skip-reason "RAM 16 GB tidak cukup"
+# matriks eksperimen dari config/ (lihat dulu perintahnya dengan --dry-run)
+python -m src.experiments config/experiment_a.yaml --dry-run
+python -m src.experiments config/experiment_a.yaml
+python -m src.experiments config/experiment_b.yaml --only qwen3-4b-4bit-k4
 ```
 
-ID model di atas masih contoh dan perlu divalidasi (T02). `--no-power` bisa
-dipakai untuk menguji pipeline tanpa `sudo`, tetapi run-nya berstatus
-`incomplete` dan tidak masuk analisis. Lihat `python -m src.bench --help`.
+Jalankan semua perintah dari root repo. Model dan commit-nya di-pin di
+`config/defaults.yaml`; parameter decoding bersama juga ada di sana. Konfigurasi
+yang tidak muat di RAM tidak boleh diganti diam-diam: tambahkan
+`skip_reason: "..."` pada entrinya di `config/experiment_a.yaml`.
+
+`--no-power` bisa dipakai untuk menguji pipeline tanpa `sudo`, tetapi run-nya
+berstatus `incomplete` dan tidak masuk analisis. Lihat
+`python -m src.bench --help` dan `python -m src.experiments --help`.
 
 ## Struktur singkat
 

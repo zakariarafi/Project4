@@ -316,8 +316,8 @@ tertulis di `docs/DECISIONS.md`.
 
 | Pertanyaan | Pemilik | Dampak | Status |
 | --- | --- | --- | --- |
-| ID repository MLX Community mana yang persis dipakai untuk tiap varian Qwen3? | A | Memblokir pengumpulan data | Terbuka |
-| Apakah `GenerationResponse` versi terpasang menyediakan `from_draft` dan `peak_memory` dengan nama tersebut? | B | Memblokir metrik draft fraction | Terbuka |
+| ID repository MLX Community mana yang persis dipakai untuk tiap varian Qwen3? | A | Memblokir pengumpulan data | Terjawab: 9 repo `mlx-community/Qwen3-{0.6B,1.7B,4B}-{bf16,8bit,4bit}`, di-pin per commit di `config/defaults.yaml` |
+| Apakah `GenerationResponse` versi terpasang menyediakan `from_draft` dan `peak_memory` dengan nama tersebut? | B | Memblokir metrik draft fraction | Ya pada source `mlx-lm` 0.32.1 (PyPI; `peak_memory` dalam GB). Cek ulang terhadap 0.32.1.dev6 terpasang (T03) |
 | Regex `powermetrics` apa yang cocok dengan versi macOS mesin target? | A | Memblokir pengukuran energi | Terbuka |
 | Berapa RAM, ruang disk, dan versi macOS mesin target? | A | Menentukan konfigurasi yang feasible | Terbuka |
 | Tenggat 9 Oktober 2026 sudah lewat; kapan tenggat barunya? | Tim/pengajar | Menentukan scope P1 | Terbuka (D-005) |
@@ -333,6 +333,7 @@ tertulis di `docs/DECISIONS.md`.
 ├── .github/workflows/tests.yml      # pytest di setiap PR dan push ke main
 ├── src/
 │   ├── bench.py                     # CLI pengumpul metrik per run
+│   ├── experiments.py               # jalankan matriks dari config/*.yaml
 │   ├── power.py                     # pembaca/parsing powermetrics
 │   ├── schemas.py                   # model/skema record hasil
 │   ├── aggregate.py                 # membuat tabel agregat
@@ -340,7 +341,7 @@ tertulis di `docs/DECISIONS.md`.
 ├── config/
 │   ├── experiment_a.yaml            # ukuran × presisi
 │   ├── experiment_b.yaml            # speculative decoding
-│   └── defaults.yaml                # decoding dan path default
+│   └── defaults.yaml                # decoding, path default, registry model
 ├── prompts/
 │   ├── gsm8k_10.jsonl               # workload canonical, tracked
 │   └── README.md                    # asal, lisensi, dan format prompt
@@ -358,6 +359,8 @@ tertulis di `docs/DECISIONS.md`.
 │   ├── test_energy.py
 │   ├── test_power_monitor.py
 │   ├── test_bench_helpers.py
+│   ├── test_experiments.py
+│   ├── test_prompts.py
 │   ├── test_result_schema.py
 │   └── fixtures/                    # contoh output powermetrics
 └── docs/

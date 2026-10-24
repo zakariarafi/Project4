@@ -1,2 +1,4 @@
-# Dependensi test; tidak butuh MLX sehingga bisa dipasang di Linux/CI.
+# Dependensi yang tidak butuh MLX (config + test), sehingga bisa dipasang di
+# Linux/CI. requirements.txt menyertakan file ini.
+pyyaml>=6
 pytest>=8

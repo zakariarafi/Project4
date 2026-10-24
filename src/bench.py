@@ -47,6 +47,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--model", required=True, help="ID model eksplisit (Hugging Face/MLX)")
     p.add_argument("--draft-model", help="ID draft model untuk speculative decoding")
     p.add_argument("--num-draft-tokens", type=int, help="k: token draft per langkah")
+    p.add_argument("--revision", help="commit Hugging Face model target (pin)")
+    p.add_argument("--draft-revision", help="commit Hugging Face draft model (pin)")
     p.add_argument("--prompts", type=Path, default=Path("prompts/gsm8k_10.jsonl"))
     p.add_argument("--limit-prompts", type=int, help="pakai N prompt pertama saja (smoke)")
     p.add_argument("--runs", type=int, default=3, help="pengulangan terukur per prompt")
@@ -83,6 +85,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
     if (args.draft_model is None) != (args.num_draft_tokens is None):
         p.error("--draft-model dan --num-draft-tokens harus dipakai bersama")
+    if args.draft_revision and not args.draft_model:
+        p.error("--draft-revision hanya berlaku dengan --draft-model")
     if args.num_draft_tokens is not None and args.num_draft_tokens <= 0:
         p.error("--num-draft-tokens harus > 0")
     if args.runs <= 0 or args.max_tokens <= 0:
@@ -241,6 +245,8 @@ def write_manifest(args: argparse.Namespace, argv: list[str]) -> Path:
         "macos": _command_output(["sw_vers", "-productVersion"]),
         "packages": packages,
         "git_revision": _command_output(["git", "rev-parse", "HEAD"]),
+        "model_revision": args.revision,
+        "draft_revision": args.draft_revision,
         "power_interval_ms": None if args.no_power else args.power_interval_ms,
     }
     args.manifest_dir.mkdir(parents=True, exist_ok=True)
@@ -318,8 +324,12 @@ def run_block(args: argparse.Namespace, prompts: list[dict], plan: list[tuple]) 
             idle_watts = monitor.measure_idle(args.idle_seconds)
             print(f"idle = {idle_watts:.2f} W", flush=True)
 
-        model, tokenizer = load(args.model)
-        draft_model = load(args.draft_model)[0] if args.draft_model else None
+        model, tokenizer = load(args.model, revision=args.revision)
+        draft_model = (
+            load(args.draft_model, revision=args.draft_revision)[0]
+            if args.draft_model
+            else None
+        )
 
         # Warm-up: dicatat terpisah (status warmup) dan tidak dianalisis (FR-03).
         warm = base_record(args, prompts[0]["id"], WARMUP_RUN, "warmup")

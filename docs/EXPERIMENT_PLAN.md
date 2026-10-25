@@ -80,7 +80,10 @@ angka baseline dari Eksperimen A tidak dipakai sebagai pembanding B.
 - `joules_per_token` hanya dihitung jika `power_coverage ≥ 0,9`.
 - Jumlah run `energy_clipped: true` dilaporkan per konfigurasi.
 - `output_sha256` run speculative sama dengan baseline target untuk prompt
-  yang sama (temperature 0); perbedaan diselidiki sebelum agregasi.
+  yang sama (temperature 0); perbedaan diselidiki sebelum agregasi. Verifikasi
+  batch pada speculative decoding dapat membalik argmax yang nilainya hampir
+  sama (lihat `docs/NOTES.md` §2), jadi cari posisi token pertama yang berbeda
+  sebelum menyebutnya bug.
 - Konfigurasi speculative menyimpan draft model dan `k`; draft fraction `null`
   hanya diperbolehkan bila API yang terverifikasi memang tidak mengeksposnya.
 - Nilai ekstrem tidak dihapus tanpa alasan tertulis di `docs/DECISIONS.md`.

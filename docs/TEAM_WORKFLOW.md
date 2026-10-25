@@ -3,6 +3,10 @@
 Tujuan dokumen ini adalah mencegah eksperimen berjalan di dua arah yang berbeda
 atau data sulit digabungkan.
 
+> **Status peran sejak 2026-10-24 (D-007):** anggota A mengerjakan peran A dan B.
+> Pembagian di bawah tetap menjadi peta area kerja, tetapi review silang
+> antar-anggota diganti dengan [checklist self-review](#checklist-self-review-d-007).
+
 ## Peran utama
 
 | Area | Anggota A — Infrastruktur & eksekusi | Anggota B — Validasi & analisis |
@@ -17,6 +21,21 @@ atau data sulit digabungkan.
 
 Kepemilikan bukan pembatas: setiap perubahan yang menyentuh kontrak data,
 parameter eksperimen, atau perhitungan energi harus direview anggota lain.
+
+## Checklist self-review (D-007)
+
+Karena tidak ada anggota kedua, setiap perubahan pada kontrak data, parameter
+eksperimen, atau perhitungan energi masuk lewat PR ke `main` dan baru di-merge
+setelah:
+
+- CI `tests` hijau pada commit terakhir PR;
+- perubahan skema/parameter dicatat di `docs/DECISIONS.md` dengan status
+  *accepted* (bukan *proposed*);
+- dibaca ulang minimal satu hari setelah ditulis, atau setelah smoke run,
+  dengan pertanyaan: apakah data lama tetap valid, dan apakah experiment ID
+  perlu diganti;
+- angka di README, `summary.csv`, dan grafik diperiksa saling cocok bila
+  perubahan menyentuh analisis.
 
 ## Aturan Git
 

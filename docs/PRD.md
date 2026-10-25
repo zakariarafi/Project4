@@ -3,10 +3,10 @@
 | Item | Nilai |
 | --- | --- |
 | Versi | 0.1 — draft untuk eksekusi |
-| Pemilik | Tim benchmark (2 orang) |
+| Pemilik | Tim benchmark (2 orang; sejak 2026-10-24 seluruhnya dikerjakan anggota A, D-007) |
 | Target waktu | 5–9 Oktober 2026 — **sudah terlewati**; jadwal baru menunggu konfirmasi pengajar (D-005) |
 | Platform | macOS pada Apple Silicon, MLX/Metal |
-| Status | Siap dipecah menjadi tugas implementasi |
+| Status | Implementasi selesai dan tervalidasi tanpa data daya; menunggu pengumpulan data di Mac (README, Urutan kerja di Mac) |
 
 ## 1. Ringkasan
 
@@ -153,8 +153,8 @@ throughput dan energi tidak dapat dipercaya maupun dipakai untuk Project 3.
 ### Variabel terkendali
 
 - Perangkat: satu mesin Apple Silicon, mode daya/kondisi sistem dicatat.
-- Backend: MLX dengan Python 3.12; versi awal yang diketahui adalah
-  `mlx-lm 0.32.1.dev6` dan `mlx 0.32.3`.
+- Backend: MLX dengan Python 3.12; `mlx 0.32.3` dan `mlx-lm 0.32.1` di-pin di
+  `requirements.txt` (D-008, menggantikan build dev `0.32.1.dev6`).
 - Workload: sekitar 10 prompt GSM8K dari `prompts/gsm8k_10.jsonl`.
 - Generation: non-thinking untuk Qwen3 (`enable_thinking=False` pada chat
   template, tercatat di setiap record), temperature 0, max output tokens 256
@@ -317,7 +317,7 @@ tertulis di `docs/DECISIONS.md`.
 | Pertanyaan | Pemilik | Dampak | Status |
 | --- | --- | --- | --- |
 | ID repository MLX Community mana yang persis dipakai untuk tiap varian Qwen3? | A | Memblokir pengumpulan data | Terjawab: 9 repo `mlx-community/Qwen3-{0.6B,1.7B,4B}-{bf16,8bit,4bit}`, di-pin per commit di `config/defaults.yaml` |
-| Apakah `GenerationResponse` versi terpasang menyediakan `from_draft` dan `peak_memory` dengan nama tersebut? | B | Memblokir metrik draft fraction | Ya pada source `mlx-lm` 0.32.1 (PyPI; `peak_memory` dalam GB). Cek ulang terhadap 0.32.1.dev6 terpasang (T03) |
+| Apakah `GenerationResponse` versi terpasang menyediakan `from_draft` dan `peak_memory` dengan nama tersebut? | B → A | Memblokir metrik draft fraction | Terjawab: ya pada `mlx-lm` 0.32.1 yang di-pin (D-008; `peak_memory` dalam GB), diverifikasi dengan smoke run; lihat `docs/NOTES.md` |
 | Regex `powermetrics` apa yang cocok dengan versi macOS mesin target? | A | Memblokir pengukuran energi | Terbuka |
 | Berapa RAM, ruang disk, dan versi macOS mesin target? | A | Menentukan konfigurasi yang feasible | Terbuka |
 | Tenggat 9 Oktober 2026 sudah lewat; kapan tenggat barunya? | Tim/pengajar | Menentukan scope P1 | Terbuka (D-005) |

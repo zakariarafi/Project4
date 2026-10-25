@@ -5,6 +5,8 @@ import pytest
 from src.power import PowermetricsParser, RawSample, align_samples, parse_powermetrics
 
 FIXTURE = Path(__file__).parent / "fixtures" / "powermetrics_synthetic.txt"
+# Output asli dari Mac target (README langkah 3) otomatis ikut dites.
+REAL_FIXTURES = sorted(FIXTURE.parent.glob("powermetrics_macos*.txt"))
 
 
 def test_parse_fixture_uses_combined_power_and_fallback():
@@ -44,3 +46,11 @@ def test_align_uses_earliest_arrival_as_anchor():
 
 def test_align_empty():
     assert align_samples([]) == []
+
+
+@pytest.mark.skipif(not REAL_FIXTURES, reason="belum ada output powermetrics asli (T04)")
+@pytest.mark.parametrize("path", REAL_FIXTURES, ids=lambda p: p.name)
+def test_real_powermetrics_output_parses(path):
+    samples = parse_powermetrics(path.read_text())
+    assert len(samples) >= 3
+    assert all(s.watts > 0 and 0 < s.elapsed_s < 1 for s in samples)

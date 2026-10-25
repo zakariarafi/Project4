@@ -11,8 +11,10 @@ orang, definisi eksperimen, dan aturan kolaborasi diringkas di:
 - [docs/TEAM_WORKFLOW.md](docs/TEAM_WORKFLOW.md)
 - [docs/TASK_BOARD.md](docs/TASK_BOARD.md)
 
-> Status: implementasi awal. Runner, parser `powermetrics`, dan validator skema
-> sudah tersedia dan dites di luar Mac; smoke run di Mac target belum dilakukan.
+> Status: kode, config, prompt, dan dokumentasi siap. Pipeline sudah dijalankan
+> dengan MLX sungguhan di CPU Linux (tanpa pengukuran daya, lihat
+> [docs/NOTES.md](docs/NOTES.md)); pengumpulan data di Mac Apple Silicon belum
+> dilakukan.
 
 ## Menjalankan
 
@@ -55,6 +57,47 @@ baseline, serta jumlah output speculative yang berbeda dari baseline) dan
 `plots/throughput_by_model_size.png`, `plots/energy_per_token.png`, dan
 `plots/speculative_by_k.png` dari `summary.csv`.
 
+## Urutan kerja di Mac
+
+Semua langkah di bawah memerlukan Mac Apple Silicon. ID di kurung merujuk ke
+[docs/TASK_BOARD.md](docs/TASK_BOARD.md).
+
+1. **Lingkungan (T01).** Buat venv dan `pip install -r requirements.txt`, lalu
+   catat mesin:
+
+   ````bash
+   { echo '# Environment'; echo '```'; sw_vers; sysctl -n machdep.cpu.brand_string
+     echo "RAM bytes: $(sysctl -n hw.memsize)"; df -h .; python --version
+     pip show mlx mlx-lm | grep -E '^(Name|Version)'; echo '```'; } \
+     > data/manifests/environment.md
+   ````
+
+2. **Kapasitas (T02).** Pastikan disk kosong > 30 GB (unduhan ±23 GB). Jika
+   RAM tidak cukup untuk Qwen3-4B bf16 (±8 GB bobot), isi `skip_reason` pada
+   entrinya di `config/experiment_a.yaml` dan terapkan D-004.
+3. **`powermetrics` (T04).** Simpan output asli lalu jalankan test; file
+   `powermetrics_macos*.txt` di `tests/fixtures/` otomatis ikut dites:
+
+   ```bash
+   sudo powermetrics --samplers cpu_power,gpu_power -i 100 -n 5 \
+     > tests/fixtures/powermetrics_macos$(sw_vers -productVersion).txt
+   python -m pytest tests/test_power_parser.py
+   ```
+
+4. **Smoke run (T07/T08).** Jalankan perintah smoke di atas tanpa `--no-power`.
+   Record harus berstatus `measured` dengan `power_coverage` ≥ 0,9. Jika
+   `incomplete` karena cakupan rendah, catat di `docs/DECISIONS.md` sebelum
+   lanjut.
+5. **Eksperimen A (T09) lalu audit (T10).** `python -m src.experiments
+   config/experiment_a.yaml`, kemudian `python -m src.aggregate` dengan
+   `--expect`; periksa konfigurasi yang belum lengkap, `n_energy_clipped`,
+   dan outlier.
+6. **Eksperimen B (T11).** `python -m src.experiments config/experiment_b.yaml`;
+   periksa `n_output_mismatch` (lihat `docs/NOTES.md` §2).
+7. **Analisis dan rilis (T12/T13).** Jalankan `src.aggregate` dan `src.plot`,
+   isi bagian Hasil di bawah dari `data/processed/summary.csv`, lalu commit
+   `data/processed/`, `plots/*.png`, dan `data/manifests/`.
+
 Jalankan semua perintah dari root repo. Model dan commit-nya di-pin di
 `config/defaults.yaml`; parameter decoding bersama juga ada di sana. Konfigurasi
 yang tidak muat di RAM tidak boleh diganti diam-diam: tambahkan
@@ -63,6 +106,26 @@ yang tidak muat di RAM tidak boleh diganti diam-diam: tambahkan
 `--no-power` bisa dipakai untuk menguji pipeline tanpa `sudo`, tetapi run-nya
 berstatus `incomplete` dan tidak masuk analisis. Lihat
 `python -m src.bench --help` dan `python -m src.experiments --help`.
+
+## Hasil
+
+Belum ada data dari Mac target. Bagian ini diisi dari
+`data/processed/summary.csv` setelah Eksperimen A dan B selesai, bersama
+spesifikasi mesin dari `data/manifests/environment.md`.
+
+## Keterbatasan
+
+1. `powermetrics` mengukur daya seluruh chip (CPU + GPU + ANE), bukan energi
+   proses atau model saja; aktivitas latar belakang ikut terukur.
+2. Energi prefill ikut dihitung (`duration_s` mencakup prefill), sedangkan
+   `J/token` dibagi jumlah token keluaran saja.
+3. Semua angka diukur pada batch size 1.
+4. Urutan run, suhu/thermal throttling, aktivitas latar belakang, dan interval
+   sampling 100 ms dapat memengaruhi hasil. Idle diukur ulang tiap 10 run dan
+   run dengan cakupan sampel daya < 0,9 dikeluarkan dari analisis.
+5. Pada speculative decoding, `prompt_tps` mencakup prefill dua model
+   sehingga tidak sebanding langsung dengan baseline; bandingkan
+   `generation_tps` dan `J/token`.
 
 ## Struktur singkat
 

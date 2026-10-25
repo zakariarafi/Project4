@@ -325,11 +325,12 @@ def run_block(args: argparse.Namespace, prompts: list[dict], plan: list[tuple]) 
             print(f"idle = {idle_watts:.2f} W", flush=True)
 
         model, tokenizer = load(args.model, revision=args.revision)
-        draft_model = (
-            load(args.draft_model, revision=args.draft_revision)[0]
-            if args.draft_model
-            else None
-        )
+        draft_model = None
+        if args.draft_model:
+            draft_model, draft_tokenizer = load(args.draft_model, revision=args.draft_revision)
+            # Sama seperti CLI mlx_lm.generate: draft wajib berbagi vocab target.
+            if draft_tokenizer.vocab_size != tokenizer.vocab_size:
+                raise ValueError("tokenizer draft model tidak cocok dengan model target")
 
         # Warm-up: dicatat terpisah (status warmup) dan tidak dianalisis (FR-03).
         warm = base_record(args, prompts[0]["id"], WARMUP_RUN, "warmup")

@@ -330,10 +330,12 @@ tertulis di `docs/DECISIONS.md`.
 ├── .gitignore
 ├── requirements.txt                 # pin dependency proyek setelah tervalidasi
 ├── requirements-dev.txt             # dependensi test (tanpa MLX), dipakai CI
+├── scripts/run_mac.sh               # seluruh pengumpulan data di Mac
 ├── .github/workflows/tests.yml      # pytest di setiap PR dan push ke main
 ├── src/
 │   ├── bench.py                     # CLI pengumpul metrik per run
 │   ├── experiments.py               # jalankan matriks dari config/*.yaml
+│   ├── smoke_check.py               # gerbang smoke run sebelum eksperimen
 │   ├── power.py                     # pembaca/parsing powermetrics
 │   ├── schemas.py                   # model/skema record hasil
 │   ├── aggregate.py                 # membuat tabel agregat
@@ -363,6 +365,7 @@ tertulis di `docs/DECISIONS.md`.
 │   ├── test_experiments.py
 │   ├── test_aggregate.py
 │   ├── test_plot.py
+│   ├── test_smoke_check.py
 │   ├── test_prompts.py
 │   ├── test_result_schema.py
 │   └── fixtures/                    # contoh output powermetrics

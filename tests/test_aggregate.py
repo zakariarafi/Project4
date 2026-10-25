@@ -90,6 +90,11 @@ def test_invalid_input_is_rejected(tmp_path):
         load_records([path])
 
 
+def test_missing_input_is_rejected(tmp_path):
+    with pytest.raises(AggregateError, match="tidak ada"):
+        load_records([tmp_path / "results.jsonl"])
+
+
 def test_expected_matrix_from_configs():
     expected = expected_from_configs(
         [ROOT / "config" / "experiment_a.yaml", ROOT / "config" / "experiment_b.yaml"],

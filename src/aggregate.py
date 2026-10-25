@@ -68,6 +68,9 @@ def parse_model(repo: str | None) -> tuple[float | None, str | None]:
 
 
 def load_records(paths: list[Path]) -> list[dict]:
+    missing = [str(path) for path in paths if not path.exists()]
+    if missing:
+        raise AggregateError("file input tidak ada: " + ", ".join(missing))
     problems = [p for path in paths for p in validate_file(path)]
     if problems:
         raise AggregateError("input tidak valid:\n  " + "\n  ".join(problems))

@@ -19,7 +19,7 @@ peran asal agar riwayat tetap terbaca.
 | T10 | Audit data Eksperimen A | B → A | T09 | TODO | Ringkasan valid/fail dan outlier dicatat. |
 | T11 | Jalankan Eksperimen B | A | T06–T10 | TODO | Baseline dan enam variasi speculative tercatat. |
 | T12 | Agregasi dan grafik | B → A | T09, T11 | IN PROGRESS | CSV summary dan dua grafik terbuat ulang dari source. `src/aggregate.py` dan `src/plot.py` sudah ada (dites dengan data sintetis); menunggu data T09/T11. |
-| T13 | README/reproducibility audit | A | T12 | TODO | Rekan dapat mengikuti instruksi smoke run dan angka konsisten. |
+| T13 | README/reproducibility audit | A | T12 | IN PROGRESS | Rekan dapat mengikuti instruksi smoke run dan angka konsisten. Clone baru `main` mengikuti README: test, dry-run, dan `scripts/run_mac.sh smoke` (disimulasikan di Linux) berjalan; tinggal angka asli dari Mac. |
 
 ## Urutan kritis
 

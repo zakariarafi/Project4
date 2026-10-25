@@ -59,8 +59,19 @@ baseline, serta jumlah output speculative yang berbeda dari baseline) dan
 
 ## Urutan kerja di Mac
 
-Semua langkah di bawah memerlukan Mac Apple Silicon. ID di kurung merujuk ke
-[docs/TASK_BOARD.md](docs/TASK_BOARD.md).
+Semua langkah di bawah memerlukan Mac Apple Silicon yang tersambung ke
+charger. Satu perintah menjalankan semuanya, dari Terminal di root repo:
+
+```bash
+bash scripts/run_mac.sh smoke   # langkah 1-4, berhenti setelah smoke run
+bash scripts/run_mac.sh         # langkah 1-7; aman dijalankan ulang
+```
+
+Script meminta password `sudo` sekali, menyegarkan izin `sudo` tiap menit
+(satu konfigurasi bisa lebih lama dari timeout `sudo` 5 menit), mencegah Mac
+tidur dengan `caffeinate`, dan berhenti bila smoke run tidak menghasilkan run
+`measured`. Rincian tiap langkah, untuk dijalankan manual bila perlu (ID di
+kurung merujuk ke [docs/TASK_BOARD.md](docs/TASK_BOARD.md)):
 
 1. **Lingkungan (T01).** Buat venv dan `pip install -r requirements.txt`, lalu
    catat mesin:
@@ -84,10 +95,12 @@ Semua langkah di bawah memerlukan Mac Apple Silicon. ID di kurung merujuk ke
    python -m pytest tests/test_power_parser.py
    ```
 
-4. **Smoke run (T07/T08).** Jalankan perintah smoke di atas tanpa `--no-power`.
-   Record harus berstatus `measured` dengan `power_coverage` ≥ 0,9. Jika
-   `incomplete` karena cakupan rendah, catat di `docs/DECISIONS.md` sebelum
-   lanjut.
+4. **Smoke run (T07/T08).** Jalankan perintah smoke di atas tanpa `--no-power`,
+   lalu `python -m src.smoke_check data/raw/smoke.jsonl`: harus ada run
+   `measured` dengan `power_coverage` ≥ 0,9. Jika `incomplete` karena cakupan
+   rendah, catat di `docs/DECISIONS.md` sebelum lanjut. Jalankan
+   `while true; do sudo -n true; sleep 60; done &` agar izin `sudo` tidak
+   habis di tengah eksperimen.
 5. **Eksperimen A (T09) lalu audit (T10).** `python -m src.experiments
    config/experiment_a.yaml`, kemudian `python -m src.aggregate` dengan
    `--expect`; periksa konfigurasi yang belum lengkap, `n_energy_clipped`,

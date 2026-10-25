@@ -3,10 +3,10 @@
 | Item | Nilai |
 | --- | --- |
 | Versi | 0.1 — draft untuk eksekusi |
-| Pemilik | Tim benchmark (2 orang) |
-| Target waktu | 5–9 Oktober 2026, perlu dikonfirmasi dengan pengajar bila berubah |
+| Pemilik | Tim benchmark (2 orang; sejak 2026-10-24 seluruhnya dikerjakan anggota A, D-007) |
+| Target waktu | 5–9 Oktober 2026 — **sudah terlewati**; jadwal baru menunggu konfirmasi pengajar (D-005) |
 | Platform | macOS pada Apple Silicon, MLX/Metal |
-| Status | Siap dipecah menjadi tugas implementasi |
+| Status | Implementasi selesai dan tervalidasi tanpa data daya; menunggu pengumpulan data di Mac (README, Urutan kerja di Mac) |
 
 ## 1. Ringkasan
 
@@ -153,10 +153,11 @@ throughput dan energi tidak dapat dipercaya maupun dipakai untuk Project 3.
 ### Variabel terkendali
 
 - Perangkat: satu mesin Apple Silicon, mode daya/kondisi sistem dicatat.
-- Backend: MLX dengan Python 3.12; versi awal yang diketahui adalah
-  `mlx-lm 0.32.1.dev6` dan `mlx 0.32.3`.
+- Backend: MLX dengan Python 3.12; `mlx 0.32.3` dan `mlx-lm 0.32.1` di-pin di
+  `requirements.txt` (D-008, menggantikan build dev `0.32.1.dev6`).
 - Workload: sekitar 10 prompt GSM8K dari `prompts/gsm8k_10.jsonl`.
-- Generation: non-thinking untuk Qwen3, temperature 0, max output tokens 256
+- Generation: non-thinking untuk Qwen3 (`enable_thinking=False` pada chat
+  template, tercatat di setiap record), temperature 0, max output tokens 256
   kecuali dicatat berbeda.
 - Batch size: 1.
 - Repetisi: tiga run terukur per prompt; warm-up dibuang.
@@ -175,23 +176,48 @@ Setiap target precision harus memiliki baseline tanpa draft pada workload yang
 sama. Konfigurasi valid hanya bila versi MLX yang dipasang mendukung argumen
 draft; nama field dan argument diverifikasi sebelum pengumpulan data.
 
+Jika Qwen3-4B bf16 berstatus `skipped_resource_limit` pada Eksperimen A, target
+bf16 pada Eksperimen B diganti Qwen3-4B 8-bit dengan experiment ID tersendiri
+dan dicatat di `docs/DECISIONS.md` (D-004). Target 4-bit tidak berubah.
+
+Dengan temperature 0, speculative decoding seharusnya menghasilkan teks yang
+sama dengan baseline target tanpa draft. Setiap run menyimpan `output_sha256`;
+hash yang berbeda dari baseline untuk prompt yang sama wajib diselidiki
+sebelum data dipakai.
+
 ### Metode energi
 
-`powermetrics` membaca daya gabungan CPU + GPU + ANE dalam mW. Ambil baseline
-idle sebelum blok run, lalu hitung:
+`powermetrics` membaca daya gabungan CPU + GPU + ANE dalam mW, dengan interval
+sampling **100 ms** (D-002). Run model kecil dapat selesai dalam 1–2 detik,
+sehingga interval 500 ms hanya memberi 2–4 sampel per run.
+
+- **Jendela run (`duration_s`)**: waktu dinding dari pemanggilan
+  `stream_generate` sampai token terakhir, **termasuk prefill** (D-003).
+  Tokenisasi/chat template dan pemuatan model di luar jendela.
+- **Daya rata-rata run**: setiap sampel diletakkan pada sumbu waktu dan
+  dibobot dengan lamanya tumpang-tindih dengan jendela run, bukan sekadar
+  rata-rata sampel yang tiba selama run.
+- **Cakupan**: porsi jendela run yang tertutup sampel (`power_coverage`).
+  Run dengan cakupan < 0,9 berstatus `incomplete` dan tidak masuk grafik.
+- **Idle**: diukur 20 detik di awal blok, lalu diukur ulang 10 detik setiap
+  10 run terukur untuk menangkap drift thermal. Setiap record menyimpan nilai
+  idle yang dipakai.
 
 ```text
 energi tambahan (J) = max(daya_rata-rata_run - daya_idle, 0) × durasi_run
 J/token = energi tambahan / jumlah_token_keluaran
 ```
 
-Simpan sampel/diagnostik yang cukup untuk mendeteksi parser gagal. Nilai negatif
-setelah pengurangan baseline menjadi 0 sesuai definisi ini, tetapi harus tetap
-ditandai di log untuk audit.
+Nilai negatif setelah pengurangan idle menjadi 0 sesuai definisi ini, dan
+ditandai `energy_clipped: true`. Jumlah run yang terpotong wajib dilaporkan per
+konfigurasi karena pemotongan membuat rata-rata bias ke atas.
 
 ## 8. Skema data minimum
 
-Satu baris `data/raw/results.jsonl` mewakili satu run terukur. Field minimum:
+Satu baris `data/raw/results.jsonl` mewakili satu run (terukur, warm-up,
+gagal, tidak lengkap, atau dilewati). Definisi tipe dan aturan validasi ada di
+`src/schemas.py`; jalankan `python -m src.schemas FILE.jsonl` untuk memeriksa
+file. Warm-up memakai `run: -1`. Field:
 
 ```json
 {
@@ -204,6 +230,10 @@ Satu baris `data/raw/results.jsonl` mewakili satu run terukur. Field minimum:
   "prompt_id": "gsm8k-001",
   "run": 0,
   "status": "measured",
+  "temperature": 0.0,
+  "seed": 0,
+  "max_tokens": 256,
+  "enable_thinking": false,
   "generation_tokens": 0,
   "generation_tps": 0.0,
   "prompt_tokens": 0,
@@ -213,8 +243,15 @@ Satu baris `data/raw/results.jsonl` mewakili satu run terukur. Field minimum:
   "avg_watts": 0.0,
   "duration_s": 0.0,
   "joules_per_token": 0.0,
+  "energy_clipped": false,
+  "power_interval_ms": 100,
+  "power_samples": 0,
+  "power_coverage": 0.0,
   "draft_fraction": null,
-  "started_at": "2026-10-05T00:00:00+07:00"
+  "output_sha256": "<sha256 teks keluaran>",
+  "started_at": "2026-10-05T00:00:00+07:00",
+  "finished_at": "2026-10-05T00:00:02+07:00",
+  "error": null
 }
 ```
 
@@ -279,11 +316,11 @@ tertulis di `docs/DECISIONS.md`.
 
 | Pertanyaan | Pemilik | Dampak | Status |
 | --- | --- | --- | --- |
-| ID repository MLX Community mana yang persis dipakai untuk tiap varian Qwen3? | A | Memblokir pengumpulan data | Terbuka |
-| Apakah `GenerationResponse` versi terpasang menyediakan `from_draft` dan `peak_memory` dengan nama tersebut? | B | Memblokir metrik draft fraction | Terbuka |
+| ID repository MLX Community mana yang persis dipakai untuk tiap varian Qwen3? | A | Memblokir pengumpulan data | Terjawab: 9 repo `mlx-community/Qwen3-{0.6B,1.7B,4B}-{bf16,8bit,4bit}`, di-pin per commit di `config/defaults.yaml` |
+| Apakah `GenerationResponse` versi terpasang menyediakan `from_draft` dan `peak_memory` dengan nama tersebut? | B → A | Memblokir metrik draft fraction | Terjawab: ya pada `mlx-lm` 0.32.1 yang di-pin (D-008; `peak_memory` dalam GB), diverifikasi dengan smoke run; lihat `docs/NOTES.md` |
 | Regex `powermetrics` apa yang cocok dengan versi macOS mesin target? | A | Memblokir pengukuran energi | Terbuka |
 | Berapa RAM, ruang disk, dan versi macOS mesin target? | A | Menentukan konfigurasi yang feasible | Terbuka |
-| Apakah tenggat 9 Oktober 2026 masih berlaku? | Tim/pengajar | Menentukan scope P1 | Terbuka |
+| Tenggat 9 Oktober 2026 sudah lewat; kapan tenggat barunya? | Tim/pengajar | Menentukan scope P1 | Terbuka (D-005) |
 
 ## 13. Struktur repositori yang disetujui
 
@@ -292,8 +329,11 @@ tertulis di `docs/DECISIONS.md`.
 ├── README.md
 ├── .gitignore
 ├── requirements.txt                 # pin dependency proyek setelah tervalidasi
+├── requirements-dev.txt             # dependensi test (tanpa MLX), dipakai CI
+├── .github/workflows/tests.yml      # pytest di setiap PR dan push ke main
 ├── src/
 │   ├── bench.py                     # CLI pengumpul metrik per run
+│   ├── experiments.py               # jalankan matriks dari config/*.yaml
 │   ├── power.py                     # pembaca/parsing powermetrics
 │   ├── schemas.py                   # model/skema record hasil
 │   ├── aggregate.py                 # membuat tabel agregat
@@ -301,7 +341,7 @@ tertulis di `docs/DECISIONS.md`.
 ├── config/
 │   ├── experiment_a.yaml            # ukuran × presisi
 │   ├── experiment_b.yaml            # speculative decoding
-│   └── defaults.yaml                # decoding dan path default
+│   └── defaults.yaml                # decoding, path default, registry model
 ├── prompts/
 │   ├── gsm8k_10.jsonl               # workload canonical, tracked
 │   └── README.md                    # asal, lisensi, dan format prompt
@@ -313,11 +353,19 @@ tertulis di `docs/DECISIONS.md`.
 │   └── manifests/                    # metadata environment dan command run
 ├── plots/
 │   ├── throughput_by_model_size.png
-│   └── energy_per_token.png
+│   ├── energy_per_token.png
+│   └── speculative_by_k.png         # Eksperimen B (tambahan)
 ├── tests/
 │   ├── test_power_parser.py
 │   ├── test_energy.py
-│   └── test_result_schema.py
+│   ├── test_power_monitor.py
+│   ├── test_bench_helpers.py
+│   ├── test_experiments.py
+│   ├── test_aggregate.py
+│   ├── test_plot.py
+│   ├── test_prompts.py
+│   ├── test_result_schema.py
+│   └── fixtures/                    # contoh output powermetrics
 └── docs/
     ├── PRD.md
     ├── EXPERIMENT_PLAN.md

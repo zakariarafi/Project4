@@ -1,0 +1,27 @@
+# Eksperimen A — ukuran × presisi (docs/EXPERIMENT_PLAN.md).
+# 9 konfigurasi × 10 prompt × 3 run = 270 record measured, plus 1 warm-up
+# per konfigurasi. Parameter decoding diambil dari config/defaults.yaml.
+experiment_id: A-size-precision
+
+configs:
+  - config_id: qwen3-0.6b-bf16
+    model: qwen3-0.6b-bf16
+  - config_id: qwen3-0.6b-8bit
+    model: qwen3-0.6b-8bit
+  - config_id: qwen3-0.6b-4bit
+    model: qwen3-0.6b-4bit
+  - config_id: qwen3-1.7b-bf16
+    model: qwen3-1.7b-bf16
+  - config_id: qwen3-1.7b-8bit
+    model: qwen3-1.7b-8bit
+  - config_id: qwen3-1.7b-4bit
+    model: qwen3-1.7b-4bit
+  # Wajib jika feasible. Bila RAM tidak cukup, jangan diganti model lain:
+  # tambahkan `skip_reason: "<alasan + bukti singkat>"` di entri ini agar
+  # tercatat sebagai skipped_resource_limit, lalu terapkan D-004 di Eksperimen B.
+  - config_id: qwen3-4b-bf16
+    model: qwen3-4b-bf16
+  - config_id: qwen3-4b-8bit
+    model: qwen3-4b-8bit
+  - config_id: qwen3-4b-4bit
+    model: qwen3-4b-4bit

@@ -1,0 +1,6 @@
+# Versi yang diperiksa di docs/NOTES.md dan diuji dengan smoke run (D-008).
+# Mengganti versi berarti memeriksa ulang NOTES dan memakai experiment ID baru.
+mlx==0.32.3
+mlx-lm==0.32.1
+
+-r requirements-dev.txt

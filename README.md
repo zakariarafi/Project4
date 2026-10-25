@@ -70,8 +70,37 @@ bash scripts/run_mac.sh         # langkah 1-7; aman dijalankan ulang
 Script meminta password `sudo` sekali, menyegarkan izin `sudo` tiap menit
 (satu konfigurasi bisa lebih lama dari timeout `sudo` 5 menit), mencegah Mac
 tidur dengan `caffeinate`, dan berhenti bila smoke run tidak menghasilkan run
-`measured`. Rincian tiap langkah, untuk dijalankan manual bila perlu (ID di
-kurung merujuk ke [docs/TASK_BOARD.md](docs/TASK_BOARD.md)):
+`measured`.
+
+### Menjalankan dari sesi Claude Code di Mac
+
+Sesi Claude Code (atau `nohup`) tidak punya terminal untuk mengetik password,
+jadi pasang dulu aturan `sudoers` yang mengizinkan **hanya**
+`/usr/bin/powermetrics` tanpa password. Jalankan sekali di Terminal; file
+divalidasi dengan `visudo` sebelum dipasang karena `sudoers` yang rusak bisa
+mengunci `sudo`:
+
+```bash
+printf '%s ALL=(root) NOPASSWD: /usr/bin/powermetrics\n' "$(whoami)" > /tmp/powermetrics-benchmark
+sudo visudo -cf /tmp/powermetrics-benchmark && \
+  sudo install -m 440 -o root -g wheel /tmp/powermetrics-benchmark /etc/sudoers.d/powermetrics-benchmark
+sudo -k; sudo -n powermetrics --samplers cpu_power -i 100 -n 1 >/dev/null && echo OK
+```
+
+Aturan ini memberi akses root ke `powermetrics` tanpa password, termasuk opsi
+`-o` yang menulis file sebagai root. Hapus setelah eksperimen selesai:
+`sudo rm /etc/sudoers.d/powermetrics-benchmark`. `scripts/run_mac.sh`
+mendeteksi aturan ini dan melewati `sudo -v`.
+
+Lalu buka Claude Code di folder repo (aplikasi Claude Desktop, atau
+`claude remote-control` di Terminal) dan minta ia menjalankan
+`bash scripts/run_mac.sh smoke`, lalu `bash scripts/run_mac.sh` di latar
+belakang dengan log ke `data/raw/` dan memantaunya sampai selesai.
+
+### Rincian langkah
+
+Untuk dijalankan manual bila perlu (ID di kurung merujuk ke
+[docs/TASK_BOARD.md](docs/TASK_BOARD.md)):
 
 1. **Lingkungan (T01).** Buat venv dan `pip install -r requirements.txt`, lalu
    catat mesin:

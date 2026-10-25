@@ -4,8 +4,9 @@
 #   bash scripts/run_mac.sh          # langkah 1-7: lingkungan sampai grafik
 #   bash scripts/run_mac.sh smoke    # berhenti setelah smoke run (langkah 1-4)
 #
-# Aman dijalankan ulang: run yang sudah `measured` dilewati. Jalankan dari
-# Terminal (bukan lewat SSH tanpa TTY) karena `sudo -v` meminta password sekali.
+# Aman dijalankan ulang: run yang sudah `measured` dilewati. Dari Terminal,
+# `sudo -v` meminta password sekali; dari sesi tanpa terminal (Claude Code,
+# nohup) pasang dulu aturan sudoers powermetrics di README.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -53,15 +54,21 @@ fi
 pmset -g batt | grep -q "AC Power" || echo "PERINGATAN: tidak tersambung ke charger; mode daya baterai mengubah hasil."
 
 step "3. powermetrics (T04)"
-sudo -v
-# bench memanggil `sudo -n powermetrics` di awal setiap konfigurasi, dan satu
-# konfigurasi bisa lebih lama dari timeout sudo (default 5 menit). Segarkan
-# izin sudo setiap menit selama script ini berjalan.
-( while kill -0 "$$" 2>/dev/null; do sudo -n true; sleep 60; done ) &
-keepalive=$!
+# bench memanggil `sudo -n powermetrics` di awal setiap konfigurasi.
+if sudo -n powermetrics --samplers cpu_power -i 100 -n 1 >/dev/null 2>&1; then
+    # Aturan sudoers NOPASSWD khusus powermetrics (README); dipakai juga oleh
+    # sesi tanpa terminal interaktif seperti Claude Code.
+    echo "powermetrics bisa dijalankan tanpa password."
+else
+    sudo -v || die "sudo butuh password dari terminal; jalankan dari Terminal atau pasang aturan sudoers powermetrics (README)"
+    # Satu konfigurasi bisa lebih lama dari timeout sudo (default 5 menit).
+    # Segarkan izin sudo setiap menit selama script ini berjalan.
+    ( while kill -0 "$$" 2>/dev/null; do sudo -n true; sleep 60; done ) &
+    keepalive=$!
+    trap 'kill "$keepalive" 2>/dev/null || true' EXIT
+fi
 # Cegah Mac tidur selama eksperimen yang bisa berjam-jam.
 caffeinate -dimsu -w "$$" &
-trap 'kill "$keepalive" 2>/dev/null || true' EXIT
 fixture="tests/fixtures/powermetrics_macos$(sw_vers -productVersion).txt"
 # Redirect sengaja di luar sudo: file ditulis sebagai user agar bisa di-commit.
 # shellcheck disable=SC2024

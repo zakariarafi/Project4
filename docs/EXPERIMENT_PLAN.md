@@ -30,8 +30,10 @@ ruang lingkup ada di [PRD.md](PRD.md).
 Untuk setiap konfigurasi:
 
 1. Tutup aplikasi yang tidak perlu dan catat kondisi yang relevan.
-2. Jalankan `sudo -v` di awal sesi agar `powermetrics` tidak berhenti meminta
-   password di tengah benchmark.
+2. Jalankan `sudo -v` di awal sesi dan segarkan izinnya selama sesi
+   (`scripts/run_mac.sh` melakukannya tiap menit). `src.bench` memanggil
+   `sudo -n powermetrics` di awal setiap konfigurasi, dan satu konfigurasi
+   bisa lebih lama dari timeout `sudo` (default 5 menit).
 3. Mulai pencatatan daya dan ukur idle selama minimal 20 detik. Runner
    mengukur ulang idle 10 detik setiap 10 run terukur.
 4. Muat model dan jalankan satu warm-up pendek. Jangan simpan sebagai hasil
